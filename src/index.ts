@@ -38,7 +38,5 @@ const url = "https://lolesports.com/schedule?leagues=lcs";
 
   await page.goto(url, { waitUntil: "load", timeout: 0 });
 
-  await page.screenshot({ path: "screenshot.png" });
-
   await browser.close();
 })();
