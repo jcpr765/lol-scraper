@@ -4,10 +4,8 @@ import { DateTime, Interval } from "luxon";
 const url = "https://lolesports.com/schedule?leagues=lcs";
 
 const fetchThisWeeksEvents = async () => {
-  // Start browser
   const browser = await puppeteer.launch();
 
-  // Navigate to page
   const page = await browser.newPage();
 
   const today = DateTime.fromJSDate(new Date("January 23, 2023"));
