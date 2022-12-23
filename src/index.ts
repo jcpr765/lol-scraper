@@ -1,8 +1,9 @@
 import puppeteer from "puppeteer";
 import { DateTime, Interval } from "luxon";
+
 const url = "https://lolesports.com/schedule?leagues=lcs";
 
-(async () => {
+const fetchThisWeeksEvents = async () => {
   // Start browser
   const browser = await puppeteer.launch();
 
@@ -11,6 +12,8 @@ const url = "https://lolesports.com/schedule?leagues=lcs";
 
   const today = DateTime.fromJSDate(new Date("January 23, 2023"));
   const weekInterval = Interval.after(today, { days: 6 });
+
+  let thisWeeksEvents = [];
 
   page.on("response", async (interceptedResponse) => {
     const response = await interceptedResponse;
@@ -21,8 +24,6 @@ const url = "https://lolesports.com/schedule?leagues=lcs";
 
         const { events } = data.schedule;
 
-        const thisWeeksEvents = [];
-
         for (const event of events) {
           const eventTime = DateTime.fromISO(event.startTime);
 
@@ -30,13 +31,23 @@ const url = "https://lolesports.com/schedule?leagues=lcs";
             thisWeeksEvents.push(event);
           }
         }
-
-        console.log(thisWeeksEvents);
       } catch (error) {}
     }
   });
 
-  await page.goto(url, { waitUntil: "load", timeout: 0 });
+  await page.goto(url, { waitUntil: "networkidle0", timeout: 0 });
 
   await browser.close();
-})();
+
+  return thisWeeksEvents;
+};
+
+export const handler = async (): Promise<any> => {
+  const thisWeeksEvents = await fetchThisWeeksEvents();
+
+  const response = {
+    statusCode: 200,
+    body: JSON.stringify(thisWeeksEvents),
+  };
+  return response;
+};

@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "es2022",
     "moduleResolution": "node",
-    "module": "esnext"
+    "module": "esnext",
+    "outDir": "./dist",
+    "baseUrl": "./src"
   },
   "ts-node": {
     "esm": true
