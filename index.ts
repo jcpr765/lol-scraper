@@ -9,36 +9,36 @@ const url = "https://lolesports.com/schedule?leagues=lcs";
   // Navigate to page
   const page = await browser.newPage();
 
-  await page.goto(url);
-
-  // Click language selector
-  const languageSwitchSelector = ".lang-switch-trigger";
-
-  await page.waitForSelector(languageSwitchSelector);
-
-  await page.click(languageSwitchSelector);
-
-  // Click English (US)
-  const englishSelector = '[data-testid="riotbar:localeswitcher:link-en-US"]';
-
-  await page.waitForSelector(englishSelector);
-
-  await page.click(englishSelector);
-
-  // Close language select
-  await page.waitForSelector(languageSwitchSelector);
-
-  await page.click(languageSwitchSelector);
-
   const today = DateTime.fromJSDate(new Date("January 23, 2023"));
-
   const weekInterval = Interval.after(today, { days: 6 });
 
-  const element = await page.waitForSelector(".EventDate");
+  page.on("response", async (interceptedResponse) => {
+    const response = await interceptedResponse;
 
-  console.log(element);
+    if (response.url().includes("getSchedule") && response.status() === 200) {
+      try {
+        const { data } = await response.json();
 
-  await await page.screenshot({ path: "screenshot.png" });
+        const { events } = data.schedule;
+
+        const thisWeeksEvents = [];
+
+        for (const event of events) {
+          const eventTime = DateTime.fromISO(event.startTime);
+
+          if (weekInterval.contains(eventTime)) {
+            thisWeeksEvents.push(event);
+          }
+        }
+
+        console.log(thisWeeksEvents);
+      } catch (error) {}
+    }
+  });
+
+  await page.goto(url, { waitUntil: "load", timeout: 0 });
+
+  await page.screenshot({ path: "screenshot.png" });
 
   await browser.close();
 })();
