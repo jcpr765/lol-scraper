@@ -1,10 +1,15 @@
-import puppeteer from "puppeteer";
+import chromium from "chrome-aws-lambda";
 import { DateTime, Interval } from "luxon";
 
 const url = "https://lolesports.com/schedule?leagues=lcs";
 
 const fetchThisWeeksEvents = async () => {
-  const browser = await puppeteer.launch();
+  const browser = await chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+  });
 
   const page = await browser.newPage();
 
@@ -39,6 +44,13 @@ const fetchThisWeeksEvents = async () => {
 
   return thisWeeksEvents;
 };
+
+// const testFetch = async () => {
+//   const thisWeeksEvents = await fetchThisWeeksEvents();
+//   console.log(thisWeeksEvents);
+// };
+
+// testFetch();
 
 export const handler = async (): Promise<any> => {
   const thisWeeksEvents = await fetchThisWeeksEvents();
