@@ -3,6 +3,9 @@
     "target": "es2022",
     "module": "CommonJS",
     "outDir": "./dist",
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "inlineSourceMap": true,
+    "forceConsistentCasingInFileNames": true
   }
 }
