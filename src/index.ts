@@ -1,10 +1,11 @@
-import chromium from "chrome-aws-lambda";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { DateTime, Interval } from "luxon";
 
 const url = "https://lolesports.com/schedule?leagues=lcs";
 
 const fetchThisWeeksEvents = async () => {
-  const browser = await chromium.puppeteer.launch({
+  const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath,
