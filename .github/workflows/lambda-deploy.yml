@@ -19,9 +19,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies, Build application and Zip dist folder contents
-        run: npm install && npm run build
-        run: cp package.json dist && cp -r ./node_modules dist
-        run: cd dist && zip -qr9 bundle.zip . && mv bundle.zip ..
+        run: npm install && npm run build && cp package.json dist && cp -r ./node_modules dist && cd dist && zip -qr9 bundle.zip . && mv bundle.zip ..
       - name: Copy to S3
         run: >
           aws s3 cp
