@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer-core";
 import chromium from "@sparticuz/chromium";
 import { DateTime, Interval } from "luxon";
+import sendDiscordWebhook from "./sendDiscordWebhook";
 
 const url = "https://lolesports.com/schedule?leagues=lcs";
 
@@ -48,7 +49,7 @@ const fetchThisWeeksEvents = async () => {
 
 // const testFetch = async () => {
 //   const thisWeeksEvents = await fetchThisWeeksEvents();
-//   console.log(thisWeeksEvents);
+//   sendDiscordWebhook([]);
 // };
 
 // testFetch();
@@ -56,9 +57,11 @@ const fetchThisWeeksEvents = async () => {
 export const handler = async (): Promise<any> => {
   const thisWeeksEvents = await fetchThisWeeksEvents();
 
+  await sendDiscordWebhook(thisWeeksEvents);
+
   const response = {
     statusCode: 200,
-    body: JSON.stringify(thisWeeksEvents),
+    body: "Message successfully sent!",
   };
   return response;
 };
