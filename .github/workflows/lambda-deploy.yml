@@ -19,12 +19,24 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies, Build application and Zip dist folder contents
-        run: npm install && npm run build && cp package.json dist && cp -r ./node_modules dist && cd dist && zip -qr9 bundle.zip . && mv bundle.zip ..
-      - name: deploy zip to aws lambda
+        run: npm install --production && npm run build && cp package.json dist && cp -r ./node_modules dist && cd dist && zip -qr bundle.zip . && mv bundle.zip ..
+      - name: Upload zip file to s3 bucket
+        uses: jakejarvis/s3-sync-action@master
+        with:
+          args: --follow-symlinks --delete
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: "bundle.zip"
+      - name: deploy from s3 bucket to aws lambda
         uses: appleboy/lambda-action@master
         with:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
           function_name: DiscordLoLEsportsScheduleBot
-          zip_file: bundle.zip
+          s3_bucket: ${{ secrets.AWS_S3_BUCKET }}
+          s3_key: bundle.zip
+          dry_run: true
