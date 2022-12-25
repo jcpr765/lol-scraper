@@ -30,7 +30,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
       - name: Upload from s3 to lambda
-        run: aws lambda update-function-code
+        run: >
+          aws lambda update-function-code
           --function-name DiscordLoLEsportsScheduleBot
           --s3-bucket ${{ secrets.AWS_S3_BUCKET }}
           --s3-key bundle.zip
