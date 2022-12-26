@@ -49,11 +49,11 @@ export default async (thisWeeksEvents: Event[]) => {
     );
 
     for (const event of dayEvents) {
-      const matchTimePST = DateTime.fromISO(event.startTime)
-        .setZone("America/Los_Angeles")
-        .toFormat("hh:mm ZZZZ");
+      const matchTimestamp = `<t:${Math.round(
+        DateTime.fromISO(event.startTime).toSeconds()
+      )}:f>`;
 
-      message += matchTimePST + "\n";
+      message += matchTimestamp + "\n";
 
       const [team1, team2] = event.match.teams;
 
