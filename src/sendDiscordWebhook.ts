@@ -33,21 +33,19 @@ export default async (thisWeeksEvents: Event[]) => {
 
   let message: string = "This week's events in LCS:\n";
 
-  const allUniqueDates: string[] = thisWeeksEvents
-    .map((event) => event.startTime)
-    .filter((startTime, idx, self) => {
-      return self.indexOf(startTime) === idx;
-    });
+  const allDays = thisWeeksEvents.map((event) =>
+    DateTime.fromISO(event.startTime).toFormat("cccc, L/d")
+  );
 
-  for (const date of allUniqueDates) {
-    const matchDay = DateTime.fromISO(date)
-      .setZone("America/Los_Angeles")
-      .toFormat("cccc, L/d");
+  const allUniqueDays: string[] = allDays.filter((startTime, idx, self) => {
+    return self.indexOf(startTime) === idx;
+  });
 
-    message += matchDay + "\n\n";
+  for (const day of allUniqueDays) {
+    message += day + "\n\n";
 
     const dayEvents = thisWeeksEvents.filter(
-      (event) => event.startTime === date
+      (event) => DateTime.fromISO(event.startTime).toFormat("cccc, L/d") === day
     );
 
     for (const event of dayEvents) {
