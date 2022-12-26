@@ -31,18 +31,36 @@ export default async (thisWeeksEvents: Event[]) => {
 
   const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-  let message: string = "This week's events in LCS:";
+  let message: string = "This week's events in LCS:\n";
 
-  for (const event of thisWeeksEvents) {
-    const matchTimePST = DateTime.fromISO(event.startTime)
+  const allUniqueDates: string[] = thisWeeksEvents
+    .map((event) => event.startTime)
+    .filter((startTime, idx, self) => {
+      return self.indexOf(startTime) === idx;
+    });
+
+  for (const date of allUniqueDates) {
+    const matchDay = DateTime.fromISO(date)
       .setZone("America/Los_Angeles")
-      .toFormat("cccc, L/d hh:mm ZZZZ");
+      .toFormat("cccc, L/d");
 
-    message += matchTimePST + "\n";
+    message += matchDay + "\n\n";
 
-    const [team1, team2] = event.match.teams;
+    const dayEvents = thisWeeksEvents.filter(
+      (event) => event.startTime === date
+    );
 
-    message += `${team1.code} (${team1.record.wins}-${team1.record.losses}) vs ${team2.code} (${team2.record.wins}-${team2.record.losses})\n`;
+    for (const event of dayEvents) {
+      const matchTimePST = DateTime.fromISO(event.startTime)
+        .setZone("America/Los_Angeles")
+        .toFormat("hh:mm ZZZZ");
+
+      message += matchTimePST + "\n";
+
+      const [team1, team2] = event.match.teams;
+
+      message += `${team1.code} (${team1.record.wins}-${team1.record.losses}) vs ${team2.code} (${team2.record.wins}-${team2.record.losses})\n\n`;
+    }
   }
 
   await axios.post(discordWebhookUrl, { content: message });
