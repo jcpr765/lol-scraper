@@ -51,9 +51,9 @@ export default async (thisWeeksEvents: Event[]) => {
     for (const event of dayEvents) {
       const matchTimestamp = `<t:${Math.round(
         DateTime.fromISO(event.startTime).toSeconds()
-      )}:f>`;
+      )}:t>`;
 
-      message += matchTimestamp + "\n";
+      message += matchTimestamp + " ";
 
       const [team1, team2] = event.match.teams;
 
