@@ -31,7 +31,7 @@ export default async (thisWeeksEvents: Event[]) => {
 
   const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
-  let message: string = "This week's events in LCS:\n";
+  let message: string = "This week's matches in LCS:\n";
 
   const allDays = thisWeeksEvents.map((event) =>
     DateTime.fromISO(event.startTime).toFormat("cccc, L/d")
