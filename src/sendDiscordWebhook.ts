@@ -1,13 +1,7 @@
 import * as dotenv from "dotenv";
 import axios from "axios";
+import { LeagueName } from "./index";
 import { DateTime } from "luxon";
-
-enum LeagueName {
-  LCS,
-  LEC,
-  LCK,
-  LPL,
-}
 
 interface Team {
   code: string;
@@ -24,16 +18,14 @@ interface Event {
   };
 }
 
-export default async (thisWeeksEvents: Event[]) => {
-  if (process.env.NODE_ENV !== "production") {
-    dotenv.config();
+const sendMessage = async (leagueEvents: Event[], webhookURL) => {
+  if (leagueEvents.length === 0) {
+    return;
   }
 
-  const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  let message: string = `This week's matches in ${leagueEvents[0].league.leagueName}:\n`;
 
-  let message: string = "This week's matches in LCS:\n";
-
-  const allDays = thisWeeksEvents.map((event) =>
+  const allDays = leagueEvents.map((event) =>
     DateTime.fromISO(event.startTime).toFormat("cccc, L/d")
   );
 
@@ -44,7 +36,7 @@ export default async (thisWeeksEvents: Event[]) => {
   for (const day of allUniqueDays) {
     message += day + "\n\n";
 
-    const dayEvents = thisWeeksEvents.filter(
+    const dayEvents = leagueEvents.filter(
       (event) => DateTime.fromISO(event.startTime).toFormat("cccc, L/d") === day
     );
 
@@ -61,5 +53,28 @@ export default async (thisWeeksEvents: Event[]) => {
     }
   }
 
-  await axios.post(discordWebhookUrl, { content: message });
+  await axios.post(webhookURL, { content: message });
+};
+
+export default async (thisWeeksEvents: Event[]) => {
+  if (process.env.NODE_ENV !== "production") {
+    dotenv.config();
+  }
+
+  const LCSWebhookURL = process.env.LCS_WEBHOOK_URL;
+  const LECWebhookURL = process.env.LEC_WEBHOOK_URL;
+
+  await sendMessage(
+    thisWeeksEvents.filter(
+      (event) => event.league.leagueName === LeagueName.LCS
+    ),
+    LCSWebhookURL
+  );
+
+  await sendMessage(
+    thisWeeksEvents.filter(
+      (event) => event.league.leagueName === LeagueName.LEC
+    ),
+    LECWebhookURL
+  );
 };
