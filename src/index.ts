@@ -3,9 +3,16 @@ import chromium from "@sparticuz/chromium";
 import { DateTime, Interval } from "luxon";
 import sendDiscordWebhook from "./sendDiscordWebhook";
 
-const url = "https://lolesports.com/schedule?leagues=lcs";
+export enum LeagueName {
+  LCS,
+  LEC,
+  LCK,
+  LPL,
+}
 
-const fetchThisWeeksEvents = async () => {
+const url = "https://lolesports.com/schedule?leagues=lcs,lec";
+
+export const fetchThisWeeksEvents = async (week: Date = new Date()) => {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
@@ -15,7 +22,7 @@ const fetchThisWeeksEvents = async () => {
 
   const page = await browser.newPage();
 
-  const today = DateTime.fromJSDate(new Date("January 23, 2023"));
+  const today = DateTime.fromJSDate(week);
   const weekInterval = Interval.after(today, { days: 6 });
 
   let thisWeeksEvents = [];
@@ -47,21 +54,22 @@ const fetchThisWeeksEvents = async () => {
   return thisWeeksEvents;
 };
 
-// const testFetch = async () => {
-//   const thisWeeksEvents = await fetchThisWeeksEvents();
-//   sendDiscordWebhook([]);
-// };
-
-// testFetch();
-
 export const handler = async (): Promise<any> => {
   const thisWeeksEvents = await fetchThisWeeksEvents();
 
-  await sendDiscordWebhook(thisWeeksEvents);
+  if (thisWeeksEvents.length > 0) {
+    await sendDiscordWebhook(thisWeeksEvents);
 
-  const response = {
+    return {
+      statusCode: 200,
+      body: "Message successfully sent!",
+    };
+  }
+
+  return {
     statusCode: 200,
-    body: "Message successfully sent!",
+    body: "No events to send found",
   };
-  return response;
 };
+
+export default handler;
