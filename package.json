@@ -4,7 +4,8 @@
   "description": "Scrape",
   "main": "index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "ts-node src/test.ts"
   },
   "author": "Juan C. Morales",
   "license": "ISC",
