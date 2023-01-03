@@ -11,7 +11,7 @@ interface Team {
 
 interface Event {
   startTime: string;
-  league: { leagueName: LeagueName; slug: string };
+  league: { name: LeagueName; slug: string };
   match: {
     id: string;
     teams: Team[];
@@ -23,7 +23,7 @@ const sendMessage = async (leagueEvents: Event[], webhookURL) => {
     return;
   }
 
-  let message: string = `This week's matches in ${leagueEvents[0].league.leagueName}:\n`;
+  let message: string = `This week's matches in ${leagueEvents[0].league.name}:\n`;
 
   const allDays = leagueEvents.map((event) =>
     DateTime.fromISO(event.startTime).toFormat("cccc, L/d")
@@ -65,16 +65,12 @@ export default async (thisWeeksEvents: Event[]) => {
   const LECWebhookURL = process.env.LEC_WEBHOOK_URL;
 
   await sendMessage(
-    thisWeeksEvents.filter(
-      (event) => event.league.leagueName === LeagueName.LCS
-    ),
+    thisWeeksEvents.filter((event) => event.league.name === LeagueName.LCS),
     LCSWebhookURL
   );
 
   await sendMessage(
-    thisWeeksEvents.filter(
-      (event) => event.league.leagueName === LeagueName.LEC
-    ),
+    thisWeeksEvents.filter((event) => event.league.name === LeagueName.LEC),
     LECWebhookURL
   );
 };

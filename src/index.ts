@@ -1,24 +1,18 @@
-import puppeteer from "puppeteer-core";
-import chromium from "@sparticuz/chromium";
+import getBrowser from "./getBrowser";
 import { DateTime, Interval } from "luxon";
 import sendDiscordWebhook from "./sendDiscordWebhook";
 
 export enum LeagueName {
-  LCS,
-  LEC,
-  LCK,
-  LPL,
+  LCS = "LCS",
+  LEC = "LEC",
+  LCK = "LCK",
+  LPL = "LPL",
 }
 
 const url = "https://lolesports.com/schedule?leagues=lcs,lec";
 
 export const fetchThisWeeksEvents = async (week: Date = new Date()) => {
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
-  });
+  const browser = await getBrowser();
 
   const page = await browser.newPage();
 
