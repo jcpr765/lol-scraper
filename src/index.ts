@@ -17,7 +17,7 @@ export const fetchThisWeeksEvents = async (week: Date = new Date()) => {
   const page = await browser.newPage();
 
   const today = DateTime.fromJSDate(week);
-  const weekInterval = Interval.after(today, { days: 6 });
+  const weekInterval = Interval.after(today, { days: 7 });
 
   let thisWeeksEvents = [];
 
@@ -48,11 +48,13 @@ export const fetchThisWeeksEvents = async (week: Date = new Date()) => {
   return thisWeeksEvents;
 };
 
-export const handler = async (): Promise<any> => {
+export const handler = async (event: { league: LeagueName }): Promise<any> => {
+  const { league } = event;
+
   const thisWeeksEvents = await fetchThisWeeksEvents();
 
   if (thisWeeksEvents.length > 0) {
-    await sendDiscordWebhook(thisWeeksEvents);
+    await sendDiscordWebhook(thisWeeksEvents, league);
 
     return {
       statusCode: 200,

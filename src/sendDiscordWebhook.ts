@@ -56,7 +56,7 @@ const sendMessage = async (leagueEvents: Event[], webhookURL) => {
   await axios.post(webhookURL, { content: message });
 };
 
-export default async (thisWeeksEvents: Event[]) => {
+export default async (thisWeeksEvents: Event[], league: LeagueName) => {
   if (process.env.NODE_ENV !== "production") {
     dotenv.config();
   }
@@ -64,13 +64,18 @@ export default async (thisWeeksEvents: Event[]) => {
   const LCSWebhookURL = process.env.LCS_WEBHOOK_URL;
   const LECWebhookURL = process.env.LEC_WEBHOOK_URL;
 
-  await sendMessage(
-    thisWeeksEvents.filter((event) => event.league.name === LeagueName.LCS),
-    LCSWebhookURL
-  );
-
-  await sendMessage(
-    thisWeeksEvents.filter((event) => event.league.name === LeagueName.LEC),
-    LECWebhookURL
-  );
+  switch (league) {
+    case LeagueName.LCS:
+      await sendMessage(
+        thisWeeksEvents.filter((event) => event.league.name === LeagueName.LCS),
+        LCSWebhookURL
+      );
+      break;
+    case LeagueName.LEC:
+      await sendMessage(
+        thisWeeksEvents.filter((event) => event.league.name === LeagueName.LEC),
+        LECWebhookURL
+      );
+      break;
+  }
 };
