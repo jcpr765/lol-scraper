@@ -48,8 +48,10 @@ export const fetchThisWeeksEvents = async (week: Date = new Date()) => {
   return thisWeeksEvents;
 };
 
-export const handler = async (event: { league: LeagueName }): Promise<any> => {
-  const { league } = event;
+export const handler = async (event: string): Promise<any> => {
+  console.log("HANDLER EVENT", event);
+
+  const { league } = JSON.parse(event);
 
   const thisWeeksEvents = await fetchThisWeeksEvents();
 
