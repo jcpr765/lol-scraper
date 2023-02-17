@@ -3,7 +3,7 @@ import { fetchThisWeeksEvents, LeagueName } from "./index";
 import sendDiscordWebhooks from "./sendDiscordWebhook";
 const testSend = async () => {
   const thisWeeksEvents = await fetchThisWeeksEvents(
-    new Date("January 17, 2023")
+    new Date("February 16, 2023")
   );
   sendDiscordWebhooks(thisWeeksEvents, LeagueName.LCS);
   sendDiscordWebhooks(thisWeeksEvents, LeagueName.LEC);

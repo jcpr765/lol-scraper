@@ -49,7 +49,11 @@ const sendMessage = async (leagueEvents: Event[], webhookURL) => {
 
       const [team1, team2] = event.match.teams;
 
-      message += `${team1.code} (${team1.record.wins}-${team1.record.losses}) vs ${team2.code} (${team2.record.wins}-${team2.record.losses})\n\n`;
+      if (team1.record && team2.record) {
+        message += `${team1.code} (${team1.record.wins}-${team1.record.losses}) vs ${team2.code} (${team2.record.wins}-${team2.record.losses})\n\n`;
+      } else {
+        message += `${team1.code} vs ${team2.code}\n\n`;
+      }
     }
   }
 
